@@ -1,6 +1,6 @@
 module EOQ
 
-using Revise
+using DecFP
 
 """
 Simple EOQ model with requiered arguments:
@@ -14,11 +14,11 @@ function eoq_execute(;demand::Signed, ct::Union{Signed,AbstractFloat},
     ce::Union{Signed,AbstractFloat}, time_units::Tuple{String,Signed}, lead_time::Signed)
     Q_star = sqrt(2*ct*demand/ce)
     T_star = Q_star/demand
-    T_star_unit_time = round(T_star*time_units[2], digits=4)
+    T_star_unit_time = Dec64(T_star*time_units[2])
     return Q_star, T_star, T_star_unit_time
 end
 
-"""Simplify input"""
+"""Simplifying input for eoq_execute() with an intermediate function"""
 function eoq(;demand, ct, ce, time_units=("m",12), lead_time=0)
     d = Dict(:demand=>demand, :ct=>ct, :ce=>ce, :time_units=>time_units, :lead_time=>lead_time)
     return eoq_execute(;d...)
