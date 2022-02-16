@@ -34,15 +34,12 @@ function eoq_execute(;demand::Signed, ct::Union{Signed,AbstractFloat}, ce::Union
     OrderingCost, HoldingCost, TRC, TC)
 end
 
-"""Intermediary function to simplify input for eoq_execute()"""
+"""
+Intermediary function to simplify input for eoq_execute()
+"""
 function eoq(;demand, ct, ce, time_units=("m",12), lead_time=0)
     d = Dict(:demand=>demand, :ct=>ct, :ce=>ce, :time_units=>time_units, :lead_time=>lead_time)
     return eoq_execute(;d...)
-end
-
-"""Return N_star"""
-function N_star()
-    return 1/Base.task_state_runnable
 end
 
 """Plot Costs"""
