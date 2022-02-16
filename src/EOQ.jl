@@ -1,6 +1,8 @@
 module EOQ
 
 using DecFP
+export @d128_str, @d32_str, @d64_str, @d_str, Dec128, Dec32, Dec64, DecFP, exponent10, ldexp10, sigexp
+using Plots
 
 """
 Simple EOQ model with required arguments:
@@ -12,22 +14,52 @@ Optional arguments:
 """
 function eoq_execute(;demand::Signed, ct::Union{Signed,AbstractFloat}, ce::Union{Signed,AbstractFloat},
     time_units::Tuple{String,Signed}, lead_time::Signed)
-    Q_star = sqrt(2*ct*demand/ce)
-    T_star = Q_star/demand
-    T_star_unit_time = Dec64(T_star*time_units[2])
-    return Q_star, T_star, T_star_unit_time
+    # Basic Output
+    Q = sqrt(2*ct*demand/ce)
+    T = Q/demand
+    T_ut = Dec64(T*time_units[2])
+    N = 1/T
+
+    # Inventory Position
+    #   ROP_IP = demand*lead_time/time_units[2]
+
+    # Costs
+    OrderingCost = ct*N
+    HoldingCost = ce*(Q/2)
+    TRC() = OrderingCost + HoldingCost
+    TC(c::Union{Signed,AbstractFloat}) = TRC() + c*demand
+
+    # Returning a function with "public" elements inside
+    ()->(Q, T, T_ut, N,
+    OrderingCost, HoldingCost, TRC, TC)
 end
 
-"""Simplifying input for eoq_execute() with an intermediary function"""
+"""Intermediary function to simplify input for eoq_execute()"""
 function eoq(;demand, ct, ce, time_units=("m",12), lead_time=0)
     d = Dict(:demand=>demand, :ct=>ct, :ce=>ce, :time_units=>time_units, :lead_time=>lead_time)
     return eoq_execute(;d...)
 end
 
+"""Return N_star"""
+function N_star()
+    return 1/Base.task_state_runnable
+end
+
+"""Plot Costs"""
+
+"""Plot Policy"""
+
 end # Module EOQ
 
-# Test: Input combinations
-EOQ.eoq(ct=500, demand=2000, ce=50*0.25)
-EOQ.eoq(demand=2000, ct=500, ce=12.5, lead_time=0)
-EOQ.eoq(demand=2000, ct=500, ce=12.5, time_units=("m",12))
-EOQ.eoq(demand=2000, ct=500, ce=12.5, lead_time=0, time_units=("m",12))
+# Basic output
+a = EOQ.eoq(ct=500, demand=2000, ce=50*0.25)
+a.Q
+a.T
+a.T_ut
+a.N
+
+# Costs
+a.HoldingCost
+a.OrderingCost
+a.TRC()
+a.TC(50)
