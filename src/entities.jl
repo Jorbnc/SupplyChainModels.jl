@@ -10,4 +10,8 @@ struct Manufacturer <: Company
     name::String
 end
 
+struct Customer <: Company
+    name::String
 end
+
+end # Module entities
