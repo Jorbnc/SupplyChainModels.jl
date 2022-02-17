@@ -12,8 +12,8 @@ Optional arguments:
     - time units ---> Tuple ---> default is ('m' for months, 12) => 1 year
     - lead time (default is 0)
 """
-function eoq_execute(;demand::Signed, ct::Union{Signed,AbstractFloat}, ce::Union{Signed,AbstractFloat},
-    time_units::Tuple{String,Signed}, lead_time::Signed)
+function eoq_execute(;demand::Signed, c::Union{Signed,AbstractFloat}, ct::Union{Signed,AbstractFloat}, 
+    ce::Union{Signed,AbstractFloat}, time_units::Tuple{String,Signed}, lead_time::Signed)
     # Basic Output
     Q⭐ = sqrt(2*ct*demand/ce)
     T_raw = Q⭐/demand
@@ -27,11 +27,10 @@ function eoq_execute(;demand::Signed, ct::Union{Signed,AbstractFloat}, ce::Union
     OrderingCost = ct*N
     HoldingCost = ce*(Q⭐/2)
     TRC() = OrderingCost + HoldingCost
-    TC(c::Union{Signed,AbstractFloat}) = TRC() + c*demand
+    TC() = TRC() + c*demand
 
     # Inventory Policy
-    policy(c::Union{Signed,AbstractFloat}) = Dict(
-        "Q⭐"=>Q⭐, "T_raw"=>T_raw, "T"=>T, "N"=>N, "TRC"=>TRC(), "TC" => TC(c))
+    policy() = Dict("Q⭐"=>Q⭐, "T"=>T, "N"=>N, "TRC"=>TRC(), "TC"=>TC())
 
     function policy_for(s::String, value::Union{Signed, AbstractFloat})
         if s == "Q"
@@ -49,11 +48,11 @@ function eoq_execute(;demand::Signed, ct::Union{Signed,AbstractFloat}, ce::Union
         OrderingCost_for = ct*N_for
         HoldingCost_for = ce*(Q_for/2)
         TRC_for() = OrderingCost_for + HoldingCost_for
-        TC_for(c::Union{Signed,AbstractFloat}) = TRC_for() + c*demand
-        return Dict("Q"=>Q_for, "T"=>T_for, "N"=>N_for, "TRC"=>TRC_for(), "TC" => TC(c))
+        TC_for() = TRC_for() + c*demand
+        return Dict("Q"=>Q_for, "T"=>T_for, "N"=>N_for, "TRC"=>TRC_for(), "TC" => TC_for(), "ΔTC"=> TC_for()/TC())
     end
 
-    # [Required] Returning a function with "public" elements inside
+    # [Required] Returning a function with "public" elements
     ()->(Q⭐, T_raw, T, N,
     OrderingCost, HoldingCost, TRC, TC,
     policy, policy_for)
@@ -62,29 +61,9 @@ end
 """
 Intermediary function to simplify input for eoq_execute()
 """
-function eoq(;demand, ct, ce, time_units=("m",12), lead_time=0)
-    d = Dict(:demand=>demand, :ct=>ct, :ce=>ce, :time_units=>time_units, :lead_time=>lead_time)
+function eoq(;demand, c=0, ct, ce, time_units=("m",12), lead_time=0)
+    d = Dict(:demand=>demand, :c=>c, :ct=>ct, :ce=>ce, :time_units=>time_units, :lead_time=>lead_time)
     return eoq_execute(;d...)
 end
 
 end # Module EOQ
-
-# Basic output
-a = EOQ.eoq(ct=500, demand=2000, ce=50*0.25)
-a.Q⭐
-a.T_raw
-a.T
-a.N
-
-# Costs
-a.HoldingCost
-a.OrderingCost
-a.TRC()
-a.TC(50)
-
-# Policy
-a.policy(50)
-a.policy_for("Q", 500)
-a.policy_for("T", 3.0)
-
-# Falta fixear el tema del input c ---> Quizá deba incluirlo desde el primer input (eoq())
