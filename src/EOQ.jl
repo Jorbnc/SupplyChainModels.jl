@@ -2,8 +2,6 @@ module EOQ
 
 using DecFP
 export @d128_str, @d32_str, @d64_str, @d_str, Dec128, Dec32, Dec64, DecFP, exponent10, ldexp10, sigexp
-using Plots
-
 """
 Simple EOQ model with required arguments:
     - demand (constant per unit time), order (set up) cost, holding (carrying) cost
@@ -15,8 +13,8 @@ Optional arguments:
 function eoq_execute(;demand::Signed, c::Union{Signed,AbstractFloat}, ct::Union{Signed,AbstractFloat}, 
     ce::Union{Signed,AbstractFloat}, time_units::Tuple{String,Signed}, lead_time::Signed)
     # Basic Output
-    Q⭐ = sqrt(2*ct*demand/ce)
-    T_raw = Q⭐/demand
+    Q = sqrt(2*ct*demand/ce)
+    T_raw = Q/demand
     T = Dec64(T_raw*time_units[2])
     N = 1/T_raw
     
@@ -25,12 +23,12 @@ function eoq_execute(;demand::Signed, c::Union{Signed,AbstractFloat}, ct::Union{
 
     # Costs (not accounting for pipeline inventory cost, i.e. for lead_time > 0)
     OrderingCost = ct*N
-    HoldingCost = ce*(Q⭐/2)
+    HoldingCost = ce*(Q/2)
     TRC() = OrderingCost + HoldingCost
     TC() = TRC() + c*demand
 
     # Inventory Policy
-    policy() = Dict("Q⭐"=>Q⭐, "T"=>T, "N"=>N, "TRC"=>TRC(), "TC"=>TC())
+    policy() = Dict("Q"=>Q, "T"=>T, "N"=>N, "TRC"=>TRC(), "TC"=>TC())
 
     function policy_for(s::String, value::Union{Signed, AbstractFloat})
         if s == "Q"
@@ -53,7 +51,7 @@ function eoq_execute(;demand::Signed, c::Union{Signed,AbstractFloat}, ct::Union{
     end
 
     # [Required] Returning a function with "public" elements
-    ()->(Q⭐, T_raw, T, N,
+    ()->(Q, T_raw, T, N,
     OrderingCost, HoldingCost, TRC, TC,
     policy, policy_for)
 end
