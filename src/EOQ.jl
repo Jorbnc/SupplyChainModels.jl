@@ -47,7 +47,7 @@ function eoq_execute(;demand::Signed, c::Union{Signed,AbstractFloat}, ct::Union{
         HoldingCost_for = ce*(Q_for/2)
         TRC_for() = OrderingCost_for + HoldingCost_for
         TC_for() = TRC_for() + c*demand
-        return Dict("Q"=>Q_for, "T"=>T_for, "N"=>N_for, "TRC"=>TRC_for(), "TC" => TC_for(), "ΔTC"=> TC_for()/TC())
+        return Dict("Q*"=>Q_for, "T"=>T_for, "N"=>N_for, "TRC"=>TRC_for(), "TC" => TC_for(), "ΔTC"=> TC_for()/TC())
     end
 
     # [Required] Returning a function with "public" elements
