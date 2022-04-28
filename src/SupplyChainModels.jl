@@ -4,7 +4,7 @@ include("EOQ.jl")
 include("entities.jl")
 
 a = EOQ.eoq(ct=500, c=50, demand=2000, ce=50*0.25)
-a.Q⭐
+a.Q
 
 # Costs
 a.HoldingCost
