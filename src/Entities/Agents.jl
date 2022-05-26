@@ -3,7 +3,6 @@ module Agents
 using Parameters # Allows using @with_kw for optional/default fields in structs
 # --------------------------------------------------------------------------------
 
-# maybe I should import an existing package for node-like structures
 # gotta import Functions/Actions.jl
 
 abstract type Company end
