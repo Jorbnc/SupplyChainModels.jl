@@ -1,12 +1,11 @@
 module SupplyChainModels
 
-include("Optimization/EOQ.jl")
-include("Entities/Agents.jl")
+export greetings
 
-# Acá tengo importar (using/import?) cada módulo
-# para llamar, e.g.,
-    # > Agents.Supplier(args)
-# solo con el constructor 
-    # Supplier(args)
+# include("Optimization/EOQ.jl")
+# include("Entities/Agents.jl")
+# include("Flow_Units/FlowUnits.jl")
 
-end # Module EOQ
+greetings() = "Hi to everybody"
+
+end # Module
