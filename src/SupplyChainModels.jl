@@ -1,11 +1,11 @@
 module SupplyChainModels
 
-export greetings
+using Reexport
 
-# include("Optimization/EOQ.jl")
-# include("Entities/Agents.jl")
-# include("Flow_Units/FlowUnits.jl")
+include("Flow_Units/FlowUnits.jl")
+include("Actions/Source.jl")
 
-greetings() = "Hellooooo"
+@reexport using .FlowUnits
+@reexport using .Source
 
 end # Module
