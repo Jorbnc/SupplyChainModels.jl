@@ -1,10 +1,15 @@
 module Source
 
 using ..FlowUnits
+#using ...Agents # Gotta fix this, or maybe consider not using too many modules
 
-export purchase, procure
+export purchase, procure #, donate
 
-function purchase(items::Union{Array{Raw}, Array{Component}, Array{Product}})
+#= function donate(to::Company, item::FlowUnit, qty::Int)
+    to[item] += qty
+end =#
+
+function purchase(items::Array{FlowUnit})
     return items[1]
 end
 
@@ -18,7 +23,6 @@ function something()
     # use this terminology
     #   > https://en.wikipedia.org/wiki/Request_for_information
     # notice that wikipedia page considers RFI as a "business process"
-    # should I model fundamental business processes?
 end
 
 end # Module Source

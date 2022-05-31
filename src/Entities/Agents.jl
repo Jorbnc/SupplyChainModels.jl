@@ -1,36 +1,32 @@
 module Agents
 
-using Parameters # Allows using @with_kw for optional/default fields in structs
-# --------------------------------------------------------------------------------
+using Parameters
 using ..FlowUnits
 
-export Supplier
+export Company, Supplier, Manufacturer
 
 abstract type Company end
 
 @with_kw struct Supplier <: Company
-    name::Union{Nothing, String} = nothing
-    cap::Dict{FlowUnit, Tuple{Int, Int}}
-    size::Int
+    cap::Dict{FlowUnit, Tuple{Int, Int}} # Common
 end
 
 @with_kw struct Manufacturer <: Company
-    name::Union{Nothing, String} = nothing
-    # actions::Array{Union{Missing, Actions}}
+    cap::Dict{FlowUnit, Tuple{Int, Int}} # Common
 end
 
 @with_kw struct Distributor <: Company
-    name::Union{Nothing, String} = nothing
+    name::String
     # actions::Array{Union{Missing, Actions}}
 end
 
 @with_kw struct Retailer <: Company
-    name::Union{Nothing, String} = nothing
+    name::String
     # actions::Array{Union{Missing, Actions}}
 end
 
 @with_kw struct Customer <: Company # Could be a final consumer
-    name::Union{Nothing, String} = nothing
+    name::String
     # actions::Array{Union{Missing, Actions}}
 end
 
