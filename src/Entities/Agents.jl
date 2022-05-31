@@ -11,6 +11,7 @@ abstract type Company end
 @with_kw struct Supplier <: Company
     name::Union{Nothing, String} = nothing
     cap::Dict{FlowUnit, Tuple{Int, Int}}
+    size::Int
 end
 
 @with_kw struct Manufacturer <: Company

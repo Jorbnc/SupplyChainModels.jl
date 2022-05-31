@@ -5,7 +5,7 @@ using ..FlowUnits
 export purchase, procure
 
 function purchase(items::Union{Array{Raw}, Array{Component}, Array{Product}})
-    return items
+    return items[1]
 end
 
 function procure()
