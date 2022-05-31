@@ -1,11 +1,13 @@
 module FlowUnits
 
-export Raw, Component, WIP, Product
+using Parameters
+
+export FlowUnit, Raw, Component, WIP, Product
 
 abstract type FlowUnit end
 
-struct Raw <: FlowUnit
-    days::Int # Test
+@with_kw struct Raw <: FlowUnit # Immutabe object!
+    days::Int = 365 # Immutable perishability!
 end
 
 struct Component <: FlowUnit
