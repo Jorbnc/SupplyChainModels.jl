@@ -2,12 +2,12 @@ module SupplyChainModels
 
 using Reexport
 
-include("Flow_Units/FlowUnits.jl")
-include("Actions/Source.jl")
-include("Entities/Agents.jl")
+include("FlowUnits.jl")
+include("Source.jl")
+include("Agents.jl")
 
+@reexport using .Agents
 @reexport using .FlowUnits
 @reexport using .Source
-@reexport using .Agents
 
 end # Module
