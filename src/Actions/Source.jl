@@ -3,10 +3,10 @@ module Source
 using ..Agents # Gotta fix this, or maybe consider not using too many modules
 using ..FlowUnits
 
-export purchase
+export purchase, donate
 
 function donate(to::Company, item::FlowUnit, qty::Int)
-    to[item] += qty
+    to.cap[item][1] += qty
 end
 
 function purchase(items::Array{FlowUnit})

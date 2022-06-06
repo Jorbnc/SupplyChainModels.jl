@@ -7,6 +7,9 @@ export Company, Supplier, Manufacturer
 
 abstract type Company end
 
+"""
+Something something
+"""
 @with_kw struct Supplier <: Company
     cap::Dict{FlowUnit, Tuple{Int, Int}}
 end
