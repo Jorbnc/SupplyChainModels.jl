@@ -21,11 +21,11 @@ Something something
 end
 
 @with_kw struct Manufacturer <: Company
-    cap::Dict{FlowUnit, Tuple{Int, Int}}
+    capacity::Dict{FlowUnit, Inventory_status}
 end
 
 @with_kw struct Distributor <: Company
-    name::String = "name"
+    capacity::Dict{FlowUnit, Inventory_status}
 end
 
 @with_kw struct Retailer <: Company
