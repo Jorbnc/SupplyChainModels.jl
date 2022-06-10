@@ -6,7 +6,7 @@ using ..FlowUnits
 export purchase, donate
 
 function donate(to::Company, item::FlowUnit, qty::Int)
-    to.cap[item][1] += qty
+    to.capacity[item].on_hand += qty
 end
 
 function purchase(items::Array{FlowUnit})
