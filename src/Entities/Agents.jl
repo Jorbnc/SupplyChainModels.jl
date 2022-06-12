@@ -1,39 +1,56 @@
 module Agents
 
 using Parameters
+# using Random, Distributions
 using ..FlowUnits
 
-export Company, Supplier, Manufacturer
-export Inventory_status
+export Company, Supplier, Manufacturer, Retailer, Customer
+export Inventory
+
+# ============================================================
+
+@with_kw mutable struct Inventory
+    on_hand::Int = 0
+    backorder::Int = 0
+    pipeline::Int = 0
+    max_cap::Int = 0
+    demand::Int = 0 # IRL, it could exceed max_cap
+end
+
+@with_kw mutable struct Inventory_supplier
+    on_hand::Int = 0
+    backorder::Int = 0
+    pipeline::Int = 0
+    max_cap::Int = 0
+end
+
+mutable struct Position
+    longitude::Float64 # The type will depend on the coordinate system
+    latitute::Float64
+end
+
+# ============================================================
 
 abstract type Company end
 
-mutable struct Inventory_status
-    on_hand::Int
-    max::Int
-end
-
-"""
-Something something
-"""
 @with_kw struct Supplier <: Company
-    capacity::Dict{FlowUnit, Inventory_status}
+    inventory_status::Dict{FlowUnit, Inventory_supplier}
 end
 
 @with_kw struct Manufacturer <: Company
-    capacity::Dict{FlowUnit, Inventory_status}
+    inventory_status::Dict{FlowUnit, Inventory}
 end
 
 @with_kw struct Distributor <: Company
-    capacity::Dict{FlowUnit, Inventory_status}
+    inventory_status::Dict{FlowUnit, Inventory}
 end
 
 @with_kw struct Retailer <: Company
-    name::String = "name"
+    inventory_status::Dict{FlowUnit, Inventory}
 end
 
 @with_kw struct Customer <: Company # Could be a final consumer
-    name::String = "name"
+    inventory_status::Dict{FlowUnit, Inventory}
 end
 
 end # Module Agents
