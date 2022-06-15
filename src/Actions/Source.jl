@@ -31,7 +31,7 @@ function purchase(buyer::Company, seller::Company, item::FlowUnit, qty::Int)
 end
 
 """
-Generate demand for a non-supplier company based on a probability distribution.
+Generate demand for a non-supplier company following a probability distribution.
 """
 function generate_demand(company::Company, item::FlowUnit, qty::Int)
     company.inventory_status[item].demand += qty
