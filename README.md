@@ -1,2 +1,2 @@
 # SupplyChainModels
-Work in progress
+Work in progress. Testing available projects.
