@@ -9,7 +9,7 @@ function plot_network(
 	nlabels = nlabels !== nothing ? nlabels : string.(collect(vertices(network)))
 	xs, ys, paths = solve_positions(Zarate(), network)
 
-	# Look for an inline version of the following
+	# Look for an inline version of the following conditional + loop
 	if fixedpos !== nothing
 		for node in keys(fixedpos)
 			xs[node] = fixedpos[node]
