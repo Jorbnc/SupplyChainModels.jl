@@ -20,7 +20,7 @@ function plot_network(
 	foreach(v -> v[2] .= 1 .* v[2], values(paths))
 	lay = _ -> Point.(zip(xs,ys))
 	graphplot!(network,
-		nlabels=nlabels, nlabels_color=:red,
+		nlabels=nlabels, nlabels_color=:red, nlabels_align=(:center, :bottom), nlabels_distance=5,
 		elabels=elabels, elabels_rotation=[0,], elabels_textsize=15,
 		layout=lay)
 	hidedecorations!(ax); hidespines!(ax); ax.aspect = DataAspect()
