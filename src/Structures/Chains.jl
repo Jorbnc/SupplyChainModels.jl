@@ -1,5 +1,12 @@
+abstract type AbstractSChain end
+
+struct SChain <: AbstractSChain
+    arcs
+end
+
+
 """Creates a MetaDiGraph from Pairs of Strings or Symbols"""
-function schain(arcs::Union{ Vector{Pair{Symbol, Symbol}},  Vector{Pair{String, String}}})
+function SChain(arcs::Union{ Vector{Pair{Symbol, Symbol}},  Vector{Pair{String, String}}})
 
     # Get vector of unique nodes
     nodes = Vector{}()
@@ -18,4 +25,4 @@ function schain(arcs::Union{ Vector{Pair{Symbol, Symbol}},  Vector{Pair{String, 
     g
 end
 
-export schain
+export SChain

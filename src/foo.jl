@@ -6,14 +6,14 @@ net = MetaDiGraph(SimpleDiGraph(Edge.([
     6 .=> [8, 9]
     ])))
 plot_network(net; 
+    force_pos=[7=>5, 3=>2],
     nlabels=[
         "Supplier1", 
         "MWH1", "MWH2",
         "P",
         "DC1", "DC2",
         "Retailer1", "Retailer2", "Retailer3"
-        ],
-    force_pos=[3=>2, 7=>5])
+        ])
 
 
 chain = [
@@ -24,5 +24,5 @@ chain = [
     :DC2 .=> [:Ret2, :Ret3]
     ]
 
-net2 = schain(chain)
+net2 = SChain(chain)
 plot_network(net2)
