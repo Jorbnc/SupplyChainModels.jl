@@ -1,11 +1,19 @@
 module SupplyChainModels
 
-export greetings
+using Reexport
+@reexport using GLMakie, GraphMakie, NetworkLayout, LayeredLayouts
+@reexport using Graphs, MetaGraphs
 
-# include("Optimization/EOQ.jl")
-# include("Entities/Agents.jl")
-# include("Flow_Units/FlowUnits.jl")
+include("Structures/Chains.jl")
+include("Visuals/Visualize.jl")
 
-greetings() = "Hi to everybody"
+# Order of included modules is important
+include("Flow_Units/FlowUnits.jl") # Doesn't depend on any module (yet)
+include("Entities/Agents.jl") # Depends on FlowUnits
+include("Actions/Source.jl") # Depends on Agents, FlowUnits
+
+@reexport using .FlowUnits
+@reexport using .Agents
+@reexport using .Source
 
 end # Module
