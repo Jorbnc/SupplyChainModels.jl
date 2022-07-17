@@ -15,7 +15,8 @@ Parameters = "d96e819e-fc66-5662-9728-84c9c7592b0a"
 Reexport = "189a3867-3050-52da-a836-e630ba90ab69"
 
 [compat]
-DecFP = "1.2.0"
+DecFP = "^1.2.0"
+GraphMakie = "^0.3"
 GLMakie = "^0.6"
 MetaGraphs = "^0.7"
 NetworkLayout = "^0.4"
