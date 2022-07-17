@@ -1,12 +1,19 @@
 module SupplyChainModels
 
-include("Optimization/EOQ.jl")
-include("Entities/Agents.jl")
+using Reexport
+@reexport using GLMakie, GraphMakie, NetworkLayout, LayeredLayouts
+@reexport using Graphs, MetaGraphs
 
-# Acá tengo importar (using/import?) cada módulo
-# para llamar, e.g.,
-    # > Agents.Supplier(args)
-# solo con el constructor 
-    # Supplier(args)
+include("Structures/Chains.jl")
+include("Visuals/Visualize.jl")
 
-end # Module EOQ
+# Order of included modules is important
+include("Flow_Units/FlowUnits.jl") # Doesn't depend on any module (yet)
+include("Entities/Agents.jl") # Depends on FlowUnits
+include("Actions/Source.jl") # Depends on Agents, FlowUnits
+
+@reexport using .FlowUnits
+@reexport using .Agents
+@reexport using .Source
+
+end # Module
