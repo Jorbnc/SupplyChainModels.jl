@@ -1,28 +1,40 @@
 module Source
 
+using ..Agents # Gotta fix this, or maybe consider not using too many modules
 using ..FlowUnits
-#using ...Agents # Gotta fix this, or maybe consider not using too many modules
 
-export purchase, procure #, donate
+export purchase, donate, generate_demand
 
-#= function donate(to::Company, item::FlowUnit, qty::Int)
-    to[item] += qty
-end =#
-
-function purchase(items::Array{FlowUnit})
-    return items[1]
+"""
+Add units of an item to the company's on-hand inventory.
+"""
+function donate(company::Company, item::FlowUnit, qty::Int)
+    if company.inventory_status[item].on_hand + qty <= company.inventory_status[item].max_cap
+        company.inventory_status[item].on_hand += qty
+    else
+        println("The quantity exceeds the company's maximum capacity")
+    end
 end
 
-function procure()
-    # https://www.oxfordlearnersdictionaries.com/definition/english/procure
-    return nothing
+"""
+Buy units of an item from a seller, as long as restrictions aren't broken.
+"""
+function purchase(buyer::Company, seller::Company, item::FlowUnit, qty::Int)
+    if qty <= seller.inventory_status[item].on_hand && buyer.inventory_status[item].on_hand + 
+        qty <= buyer.inventory_status[item].max_cap
+        seller.inventory_status[item].on_hand -= qty
+        buyer.inventory_status[item].on_hand += qty
+        println("Bought $qty units!")
+    else
+        println("Seller doesn't have enough items or qty exceeds buyer's maximum capacity.")       
+    end
 end
 
-function something()
-    # find potential items for a requirement
-    # use this terminology
-    #   > https://en.wikipedia.org/wiki/Request_for_information
-    # notice that wikipedia page considers RFI as a "business process"
+"""
+Generate demand for a non-supplier company following a probability distribution.
+"""
+function generate_demand(company::Company, item::FlowUnit, qty::Int)
+    company.inventory_status[item].demand += qty
 end
 
 end # Module Source
