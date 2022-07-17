@@ -1,3 +1,4 @@
+# No Labeling
 net1 = MetaDiGraph(SimpleDiGraph(Edge.([
     1 => 2;
     2 .=> [3, 4];
@@ -5,6 +6,7 @@ net1 = MetaDiGraph(SimpleDiGraph(Edge.([
     ])))
 plot_network(net1)
 
+# Manual labeling
 chain1 = Schain([
     :Sup1 => :MWH1;
     :MWH1 .=> [:P, :Ret1];
@@ -12,20 +14,15 @@ chain1 = Schain([
     :P .=> [:DC1, :DC2, :Ret1];
     :DC2 .=> [:Ret2, :Ret3]
     ])
-
 plot_network(chain1)
 
+# Labeling from the construction itself
 chain2 = Schain([
-    :A => :B;
-    :B .=> [:C, :D];
-    :D => :E
-    ])
-plot_network(chain2)
-
-chain3 = Schain([
     :Chota => :Cajamarca;
     :Cajamarca .=> [:Celendin, :Cajabamba];
     :Cajabamba => :Trujillo ;
     :Trujillo => :Lima
     ])
-plot_network(chain3)
+plot_network(chain2)
+
+# Labeling + Position fixing from construction itself
