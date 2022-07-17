@@ -14,14 +14,14 @@ function initialize_plot(network::AbstractMetaGraph,
 	xs, ys, paths = solve_positions(Zarate(), network)
 	# Not actually a list comprehension, but an inline version of a for loop
 	force_pos !== nothing && [xs[node] = pos for (node, pos) in force_pos]
-	#ys .= 1 .* ys
-	#foreach(v -> v[2] .= 1 .* v[2], values(paths))
+	ys .= 1 .* ys
+	foreach(v -> v[2] .= 1 .* v[2], values(paths))
 	lay = _ -> Point.(zip(xs,ys))
 	return fig, lay
 end
 
 
-"""Plot network as a graph."""
+"""Plot the network as a graph."""
 function plot_network(
 		network::AbstractMetaGraph;
 		force_pos = nothing,
@@ -32,6 +32,20 @@ function plot_network(
 
 	nlabels = nlabels !== nothing ? nlabels : string.(collect(vertices(network)))
 	graphplot!(network,
+		nlabels=nlabels, nlabels_color=:red, nlabels_align=(:center, :bottom), nlabels_distance=5,
+		elabels=elabels, elabels_rotation=[0,], elabels_textsize=15,
+		layout=lay)
+	display(fig)
+end
+
+function plot_network(
+	schain::Schain;
+	force_pos = nothing,
+	elabels::Union{Vector{String}, Nothing} = nothing)
+
+	fig, lay = initialize_plot(schain.network, force_pos)
+	nlabels = string.(schain.labels)
+	graphplot!(schain.network,
 		nlabels=nlabels, nlabels_color=:red, nlabels_align=(:center, :bottom), nlabels_distance=5,
 		elabels=elabels, elabels_rotation=[0,], elabels_textsize=15,
 		layout=lay)

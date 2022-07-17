@@ -1,28 +1,33 @@
-abstract type AbstractSChain end
+abstract type AbstractSchain end
 
-struct SChain <: AbstractSChain
-    arcs
+"""Chain Constructor"""
+struct Schain <: AbstractSchain
+    network::MetaDiGraph
+    labels::Vector{}
 end
 
 
 """Creates a MetaDiGraph from Pairs of Strings or Symbols"""
-function SChain(arcs::Union{ Vector{Pair{Symbol, Symbol}},  Vector{Pair{String, String}}})
+function Schain(chain::Union{Vector{Pair{Symbol, Symbol}}, Vector{Pair{String, String}}})
 
     # Get vector of unique nodes
     nodes = Vector{}()
-    for (a, b) in arcs
+    for (a, b) in chain
         union!(nodes, [a, b])
     end
 
-    # Assign a number to each (labeled) node
+    # Assign a number to each labeled node
     d = Dict(value => key for (key, value) in Dict(enumerate(nodes)))
     
     # Construct and return the graph
-    g = MetaDiGraph(length(arcs))
-    for (from, to) in arcs
+    g = MetaDiGraph(length(nodes))
+    for (from, to) in chain
         add_edge!(g, d[from], d[to])
     end
-    g
+    foo = Schain(g, nodes)
+
+    return foo
+
 end
 
-export SChain
+export Schain
