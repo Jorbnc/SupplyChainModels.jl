@@ -16,6 +16,7 @@ Reexport = "189a3867-3050-52da-a836-e630ba90ab69"
 
 [compat]
 DecFP = "1.2.0"
+GLMakie = "^0.6"
 MetaGraphs = "^0.7"
 NetworkLayout = "^0.4"
 OhMyREPL = "^0.5"
