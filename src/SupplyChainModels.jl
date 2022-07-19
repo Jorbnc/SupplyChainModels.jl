@@ -5,7 +5,7 @@ using Reexport
 @reexport using Graphs, MetaGraphs
 
 include("Structures/Chains.jl")
-include("Visuals/Visualize.jl")
+include("Visuals/Chain_Plots.jl")
 
 # Order of included modules is important
 include("Flow_Units/FlowUnits.jl") # Doesn't depend on any module (yet)

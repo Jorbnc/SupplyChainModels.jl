@@ -5,7 +5,7 @@ net1 = Nchain([
     3 => 4;
     4 .=> [5, 6, 7];
     6 .=> [8, 9]
-    ]; nlabels=[4=>:TheShit],
+    ]; nlabels=[4=>:Plant],
     force_pos=[3=>2, 7=>5]
     )
 plot_network(net1)
