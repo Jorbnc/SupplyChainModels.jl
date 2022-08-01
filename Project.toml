@@ -4,6 +4,7 @@ authors = ["Jorbnc <67754592+Jorbnc@users.noreply.github.com> and contributors"]
 version = "0.1.0"
 
 [deps]
+DataFramesMeta = "1313f7d8-7da2-5740-9ea0-a2ca25f37964"
 DecFP = "55939f99-70c6-5e9b-8bb0-5071ed7d61fd"
 GLMakie = "e9467ef8-e4e7-5192-8a1a-b1aee30e663a"
 GraphMakie = "1ecd5474-83a3-4783-bb4f-06765db800d2"
@@ -15,15 +16,15 @@ Parameters = "d96e819e-fc66-5662-9728-84c9c7592b0a"
 Reexport = "189a3867-3050-52da-a836-e630ba90ab69"
 
 [compat]
-GraphMakie = "^0.3"
+DecFP = "^1.2.0"
 GLMakie = "^0.6"
+GraphMakie = "^0.3"
+Graphs = "^1"
+LayeredLayouts = "^0.2"
 MetaGraphs = "^0.7"
 NetworkLayout = "^0.4"
-DecFP = "^1.2.0"
-Reexport = "^1"
-LayeredLayouts = "^0.2"
 Parameters = "^0.12"
-Graphs = "^1"
+Reexport = "^1"
 julia = "1"
 
 [extras]

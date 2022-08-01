@@ -1,6 +1,7 @@
 module SupplyChainModels
 
 using Reexport
+@reexport using Parameters
 @reexport using GLMakie, GraphMakie, NetworkLayout, LayeredLayouts
 @reexport using Graphs, MetaGraphs
 

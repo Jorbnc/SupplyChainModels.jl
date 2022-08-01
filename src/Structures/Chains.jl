@@ -16,7 +16,7 @@ end
 struct Schain <: AbstractChain
     network::MetaDiGraph
     nlabels::Vector{String}
-    layout::Function
+    layout::Union{Function, Spring{2, Float64}};
 end
 
 
@@ -72,12 +72,15 @@ function Schain(
     end
 
     # Layout
-	xs, ys, paths = solve_positions(Zarate(), g)
-	# Not actually a list comprehension, but an inline version of a for loop
-	force_pos !== nothing && [xs[d[node]] = pos for (node, pos) in force_pos]
-	ys .= 1 .* ys # Y positioning
-    foreach(v -> v[2] .= 1 .* v[2], values(paths)) # Can't remember what is this for
-	layout = _ -> Point.(zip(xs, ys))
-
-    return Schain(g, nlabels, layout)
+    if LayeredLayouts.is_dag(g) # check if g is directed and acyclic
+        xs, ys, paths = solve_positions(Zarate(), g)
+        # Not actually a list comprehension, but an inline version of a for loop
+        force_pos !== nothing && [xs[d[node]] = pos for (node, pos) in force_pos]
+        ys .= 1 .* ys # Y positioning
+        foreach(v -> v[2] .= 1 .* v[2], values(paths)) # Can't remember what is this for
+        layout = _ -> Point.(zip(xs, ys))
+        return Schain(g, nlabels, layout)
+    else
+        return Schain(g, nlabels, Spring())
+    end
 end
