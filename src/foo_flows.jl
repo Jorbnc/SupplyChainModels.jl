@@ -1,10 +1,12 @@
 using Dates
 using DataFramesMeta
+# using BenchmarkTools
+using GLMakie
 
 # Input: DataFrame
 # Look for a more efficient, sophisticated version of the following
 begin # This has to be a function with args: n, distrib_for_arrival, distrib_for_flowtime
-    n = 100
+    n = 50
     df = DataFrame()
     df[!, :Arrival_DT] = repeat([DateTime(2022, 7, 26, 0, 0)], n) .+ Minute.(cumsum(rand(1:15, n))) .+ Second.(rand(1:30, n))
     df[!, :FlowTime_DT] = Minute.(rand(1:15, n)) .+ Second.(rand(1:30, n))
@@ -15,9 +17,20 @@ begin # This has to be a function with args: n, distrib_for_arrival, distrib_for
     end
 end
 
-# Converting datetime to integers. Btw, gotta use transform!
-transform!(df, :Arrival_DT => (x -> Int.(datetime2unix.(x)))  => :Arrival_Int)
-# Use Arrival_int as x_ticks (?) and String.(Arrival_DT) as x_ticks_labels (?)
+# Tested other versions with map() and broadcasting. They perform the same, but this is simpler
+transform!(df, :Arrival_DT => ByRow(x->Int(datetime2unix(x))) => :Arrival_Int)
+transform!(df, :Arrival_DT => ByRow(x->Dates.format(x, "yyyy-mm-dd HH:MM:SS")) => :Arrival_String) 
+
+# Plot
+# https://lazarusa.github.io/BeautifulMakie/ScattersLines/timeSeries/
+fig = Figure()
+ax = Axis(fig[1, 1])
+xs = df.Arrival_Int # Syntax for Vector conversion
+ys = rand(n)
+stairs(xs, ys)
+ax.xticks = (xs, df.Arrival_String)
+display(fig)
+
 
 # 
 difference = diff(arrival_time)
