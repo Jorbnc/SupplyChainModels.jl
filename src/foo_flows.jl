@@ -6,7 +6,7 @@ using GLMakie
 # Input: DataFrame
 # Look for a more efficient, sophisticated version of the following
 begin # This has to be a function with args: n, distrib_for_arrival, distrib_for_flowtime
-    n = 50
+    n = 20
     df = DataFrame()
     df[!, :Arrival_DT] = repeat([DateTime(2022, 7, 26, 0, 0)], n) .+ Minute.(cumsum(rand(1:15, n))) .+ Second.(rand(1:30, n))
     df[!, :FlowTime_DT] = Minute.(rand(1:15, n)) .+ Second.(rand(1:30, n))
@@ -19,17 +19,19 @@ end
 
 # Tested other versions with map() and broadcasting. They perform the same, but this is simpler
 transform!(df, :Arrival_DT => ByRow(x->Int(datetime2unix(x))) => :Arrival_Int)
-transform!(df, :Arrival_DT => ByRow(x->Dates.format(x, "yyyy-mm-dd HH:MM:SS")) => :Arrival_String) 
+transform!(df, :Arrival_DT => ByRow(x->Dates.format(x, "yyyy-mm-dd HH:MM:SS")) => :Arrival_Str) 
 
 # Plot
-# https://lazarusa.github.io/BeautifulMakie/ScattersLines/timeSeries/
 fig = Figure()
 ax = Axis(fig[1, 1])
-xs = df.Arrival_Int # Syntax for Vector conversion
+xs = df.Arrival_Int # Syntax for conversion to Vector
 ys = rand(n)
-stairs(xs, ys)
-ax.xticks = (xs, df.Arrival_String)
+stairs!(xs, ys)
+ax.xticks = (xs, df.Arrival_Str)
+ax.xticklabelrotation = π/4
+ax.xticklabelalign = (:right, :top)
 display(fig)
+
 
 
 # 
