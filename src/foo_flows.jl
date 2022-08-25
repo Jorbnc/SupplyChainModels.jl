@@ -17,10 +17,13 @@ function generate_data(n) # This has to be a function with args: n, distrib_for_
     end
     df
 end
+# IMPORTANT: There could be flow units that enter the system after another one and exit the system earlier
+# Since we're only plotting inflow and outflow, first we have to sort Arrival_DT and Departure_DT inputs
+# (in ascending time)
 
-# DateTime to Integer
+# Data transformation and pre-processing
 # Tested other versions with map() and broadcasting. They perform the same, but this is simpler
-function df_config(df; precision)
+function df_config(df; precision=Dates.Minute)
     transform!(df, :Arrival_DT => ByRow(x->floor(x, precision)) => :Arrival_Floor)
     transform!(df, :Departure_DT => ByRow(x->floor(x, precision)) => :Departure_Floor)
     #transform!(df, :Arrival_Floor => ByRow(x->Dates.format(x, "yyyy-mm-dd HH:MM:SS")) => :Arrival_Str)
@@ -34,21 +37,36 @@ function df_config(df; precision)
 end
 
 # Plot test
-# TO DO: CREATE COPIES INSTEAD OF MODIFYING THE INPUTS IN-PLACE
-function inout_plot(inflow::Vector{Int}, outflow::Vector{Int})
+# UPDATE 1: Works for 2 flow units at the same time
+function flow_plot(inflow::Vector{Int}, outflow::Vector{Int})
     inflow = copy(inflow); outflow = copy(outflow)
     append!(inflow, outflow[end]) # Last inflow time must be equal to the last outflow time (all WIP done)
     insert!(outflow, 1, inflow[1]) # At the very beginning, 0 units have exited the queue
     units = collect(0:length(inflow)-1) # If doesn't work later, check line 33 in the original inout.py
-    flow_points = sort(unique(vcat(inflow, outflow)))
+    flow_points = sort(vcat(inflow, outflow))
+    level = 1 # Starts at 1 because the insert! above will cause inflow[1] to be in both vectors, 
+            # so the first iteration of the for loop below won't change anything, even though it'd have to add 1
+    level_arr = Vector{Int}()
+    # TO DO: Look for a more efficient version of the code below (is a for loop necessary?)
+    for point in flow_points
+        if point in inflow && !(point in outflow)
+            level += 1
+        elseif point in outflow && !(point in inflow)
+            level -= 1            
+        end
+        append!(level_arr, level)
+    end
     
-    fig = Figure()
-    ax = Axis(fig[1,1])
-    stairs!(inflow, units, step=:pre, color=:black)
-    stairs!(outflow, units, step=:post, color=:green)
+    fig = Figure(resolution=(600,380*0.9))
+    ax = Axis(fig[1,1]) # to use something like ax.xticks = x_ticks
+    stairs!(inflow, units, step=:pre, color=:black, linewidth=3)
+    stairs!(outflow, units, step=:post, color=:grey, linewidth=3)
+    stairs!(flow_points, level_arr, step=:post, color=:red)
+    #fill_between!(flow_points, level_arr, [0 for x in level_arr])
     DataInspector(fig)
     display(fig)
 end
+flow_plot(data.Arrival_Floor_Int, data.Departure_Floor_Int)
 
 # mft = select(df, [:Departure_Floor_Int, :Arrival_Floor_Int] => (-) => :FlowTime_Int).FlowTime_Int |> maximum
 
@@ -65,7 +83,7 @@ end
 # Small
 entrada = [0, 0, 0, 0, 9, 11, 12, 18, 18, 25] .+ 100
 salida = [4, 6, 8, 12, 15, 20, 25, 29, 33, 40] .+ 100
-inout_plot(entrada, salida)
+flow_plot(entrada, salida)
 
 # difference = diff(arrival_time)
 
