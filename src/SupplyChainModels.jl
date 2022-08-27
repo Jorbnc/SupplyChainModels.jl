@@ -2,11 +2,13 @@ module SupplyChainModels
 
 using Reexport
 @reexport using Parameters
+@reexport using DataFramesMeta, Dates
 @reexport using GLMakie, GraphMakie, NetworkLayout, LayeredLayouts
 @reexport using Graphs, MetaGraphs
 
 include("Structures/Chains.jl")
-include("Visuals/Chain_Plots.jl")
+include("Visuals/NetworkPlots.jl")
+include("Visuals/ThroughputPlots.jl")
 
 # Order of included modules is important
 include("Flow_Units/FlowUnits.jl") # Doesn't depend on any module (yet)

@@ -1,7 +1,4 @@
-using Dates
-using DataFramesMeta
-using GLMakie
-# using BenchmarkTools
+using SupplyChainModels
 # using Distributions # Gotta use this once I know more about Queueing Theory
 
 # Input: DataFrame
@@ -24,51 +21,47 @@ end
 # Data transformation and pre-processing
 # Tested other versions with map() and broadcasting. They perform the same, but this is simpler
 function df_config(df; precision=Dates.Minute)
+    # Rounding datetime down to the nearest $precision
     transform!(df, :Arrival_DT => ByRow(x->floor(x, precision)) => :Arrival_Floor)
     transform!(df, :Departure_DT => ByRow(x->floor(x, precision)) => :Departure_Floor)
+
+    # TO DO: This is for plotting xticks as datetime strings
     #transform!(df, :Arrival_Floor => ByRow(x->Dates.format(x, "yyyy-mm-dd HH:MM:SS")) => :Arrival_Str)
     #transform!(df, :Departure_Floor => ByRow(x->Dates.format(x, "yyyy-mm-dd HH:MM:SS")) => :Departure_Str)
+
+    # Datetime to Float to Integer ---> Regardless of the $precision, we'll get this number in seconds so...
     transform!(df, :Arrival_Floor => ByRow(x->Int(datetime2unix(x))) => :Arrival_Floor_Int)
     transform!(df, :Departure_Floor => ByRow(x->Int(datetime2unix(x))) => :Departure_Floor_Int)
-    # Floor (rounding down)
+    
+    # ...we to to convert from Seconds to $precision
     factor = convert(Second, precision(1)).value # e.g. convert(Second, Hour(1))
     transform!(df, :Arrival_Floor_Int => ByRow(x->div(x, factor)), renamecols=false)
     transform!(df, :Departure_Floor_Int => ByRow(x->div(x, factor)), renamecols=false)
 end
 
-# Plot test
-# UPDATE 1: Works for 2 flow units at the same time
-function flow_plot(inflow::Vector{Int}, outflow::Vector{Int})
-    inflow = copy(inflow); outflow = copy(outflow)
-    append!(inflow, outflow[end]) # Last inflow time must be equal to the last outflow time (all WIP done)
-    insert!(outflow, 1, inflow[1]) # At the very beginning, 0 units have exited the queue
-    units = collect(0:length(inflow)-1) # If doesn't work later, check line 33 in the original inout.py
-    flow_points = sort(vcat(inflow, outflow))
-    level = 1 # Starts at 1 because the insert! above will cause inflow[1] to be in both vectors, 
-            # so the first iteration of the for loop below won't change anything, even though it'd have to add 1
-    level_arr = Vector{Int}()
-    # TO DO: Look for a more efficient version of the code below (is a for loop necessary?)
-    for point in flow_points
-        if point in inflow && !(point in outflow)
-            level += 1
-        elseif point in outflow && !(point in inflow)
-            level -= 1            
-        end
-        append!(level_arr, level)
-    end
-    
-    fig = Figure(resolution=(600,380*0.9))
-    ax = Axis(fig[1,1]) # to use something like ax.xticks = x_ticks
-    stairs!(inflow, units, step=:pre, color=:black, linewidth=3)
-    stairs!(outflow, units, step=:post, color=:grey, linewidth=3)
-    stairs!(flow_points, level_arr, step=:post, color=:red)
-    #fill_between!(flow_points, level_arr, [0 for x in level_arr])
-    DataInspector(fig)
-    display(fig)
-end
-flow_plot(data.Arrival_Floor_Int, data.Departure_Floor_Int)
+# DATA FROM MATCHING SUPPLY WITH DEMAND ================================================
+data = DataFrame(
+    :Arrival_DT => [
+        DateTime(2022, 08, 21, 7, 35, 0), DateTime(2022, 08, 21, 7, 45, 0),
+        DateTime(2022, 08, 21, 8, 10, 0), DateTime(2022, 08, 21, 9, 30, 0),
+        DateTime(2022, 08, 21, 10, 15, 0), DateTime(2022, 08, 21, 10, 30, 0),
+        DateTime(2022, 08, 21, 11, 05, 0), DateTime(2022, 08, 21, 12, 35, 0),
+        DateTime(2022, 08, 21, 14, 30, 0), DateTime(2022, 08, 21, 14, 35, 0),
+        DateTime(2022, 08, 21, 14, 40, 0)
+    ],
+    :Departure_DT => [
+        DateTime(2022, 08, 21, 8, 50, 0), DateTime(2022, 08, 21, 10, 05, 0),
+        DateTime(2022, 08, 21, 10, 10, 0), DateTime(2022, 08, 21, 10, 30, 0),
+        DateTime(2022, 08, 21, 11, 15, 0), DateTime(2022, 08, 21, 13, 15, 0),
+        DateTime(2022, 08, 21, 13, 35, 0), DateTime(2022, 08, 21, 15, 05, 0),
+        DateTime(2022, 08, 21, 15, 45, 0), DateTime(2022, 08, 21, 17, 20, 0),
+        DateTime(2022, 08, 21, 18, 10, 0)
+    ]
+)
 
-# mft = select(df, [:Departure_Floor_Int, :Arrival_Floor_Int] => (-) => :FlowTime_Int).FlowTime_Int |> maximum
+df_config(data)
+plot_throughput(data.Arrival_Floor_Int, data.Departure_Floor_Int)
+# =====================================================================================
 
 # # Large
 # # TO DO: generate_data() function doesn't work properly, it creates impossible departure times
@@ -80,13 +73,3 @@ flow_plot(data.Arrival_Floor_Int, data.Departure_Floor_Int)
 # outflow = df.Departure_Floor_Int
 # inout_plot(inflow, outflow)
 
-# Small
-entrada = [0, 0, 0, 0, 9, 11, 12, 18, 18, 25] .+ 100
-salida = [4, 6, 8, 12, 15, 20, 25, 29, 33, 40] .+ 100
-flow_plot(entrada, salida)
-
-# difference = diff(arrival_time)
-
-# TODO:
-# 2. Animate a process flow / queue (scatter plot as flow units) with arrival and service times
-#   based on probability distributions
