@@ -33,7 +33,7 @@ end
 chain = Schain(arr)
 plot_network(chain) # TO DO: Construct/Use an existing layout for this (it's too narrow)
 
-# The following has to be plottd like in Visuals/transshipment_layout.png
+# The following has to be plotted like in Visuals/transshipment_layout.png
 chain2 = Schain([
     :Memphis .=> [:NY, :LA, :Chicago, :Boston];
     :Denver .=> [:LA, :NY, :Chicago, :Boston];
