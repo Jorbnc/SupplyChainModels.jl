@@ -1,2 +1,3 @@
 # SupplyChainModels
-Work in progress. Testing ideas and existing projects.
+
+Retomando el proyecto
