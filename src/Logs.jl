@@ -1,5 +1,5 @@
 # A utility function to pretty-print stock levels for debugging or analysis
-function print_supply_chain(sc::MetaGraph)
+function printsc(sc::MetaGraph)
     println("Supply Chain Status:")
     for vertex in values(sc.vertex_labels)
         agent = sc[vertex]
@@ -7,4 +7,4 @@ function print_supply_chain(sc::MetaGraph)
     end
 end
 
-export print_supply_chain
+export printsc
