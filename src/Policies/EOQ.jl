@@ -1,7 +1,5 @@
 module EOQ
 
-using DecFP
-export @d128_str, @d32_str, @d64_str, @d_str, Dec128, Dec32, Dec64, DecFP, exponent10, ldexp10, sigexp
 """
 Simple EOQ model with required arguments:
     - demand (constant per unit time), order (set up) cost, holding (carrying) cost
