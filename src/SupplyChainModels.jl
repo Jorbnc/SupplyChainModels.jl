@@ -1,14 +1,17 @@
 module SupplyChainModels
 
 using Reexport
-@reexport using Graphs, MetaGraphsNext, GraphMakie
-#= @reexport using DecFP =#
-#= export @d128_str, @d32_str, @d64_str, @d_str, Dec128, Dec32, Dec64, DecFP, exponent10, ldexp10, sigexp =#
+using Graphs, MetaGraphsNext, GraphMakie
+using Random
 
-include("Agents/SCAgents.jl")
-include("Topology/Topology.jl")
-include("Actions/Source.jl")
-include("Visuals/SCPlotting.jl")
-include("Logs.jl")
+@reexport using Distributions
 
-end # Module
+include("type_definitions.jl")
+include("Structures/Structures.jl")
+include("Policies/Policies.jl")
+include("Agents/Agents.jl")
+include("Actions/Actions.jl")
+include("Simulation/Simulation.jl")
+include("Visuals/Visuals.jl")
+
+end # module

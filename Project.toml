@@ -4,22 +4,23 @@ authors = ["Jorbnc <67754592+Jorbnc@users.noreply.github.com> and contributors"]
 version = "0.1.0"
 
 [deps]
-DecFP = "55939f99-70c6-5e9b-8bb0-5071ed7d61fd"
 Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
+GLMakie = "e9467ef8-e4e7-5192-8a1a-b1aee30e663a"
+GraphMakie = "1ecd5474-83a3-4783-bb4f-06765db800d2"
 Graphs = "86223c79-3864-5bf0-83f7-82e725a168b6"
 LayeredLayouts = "f4a74d36-062a-4d48-97cd-1356bad1de4e"
 MetaGraphsNext = "fa8bd995-216d-47f1-8a91-f3b68fbeb377"
-Reexport = "189a3867-3050-52da-a836-e630ba90ab69"
 NetworkLayout = "46757867-2c16-5918-afeb-47bfcb05e46a"
-GLMakie = "e9467ef8-e4e7-5192-8a1a-b1aee30e663a"
-GraphMakie = "1ecd5474-83a3-4783-bb4f-06765db800d2"
+Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
+Reexport = "189a3867-3050-52da-a836-e630ba90ab69"
 
 [compat]
-julia = "1.10"
-GraphMakie = "0.5"
 Distributions = "0.25"
-NetworkLayout = "0.4.10"
+GraphMakie = "0.5"
 MetaGraphsNext = "0.7.1"
+NetworkLayout = "0.4.10"
+Random = "1.11.0"
+julia = "1.10"
 
 [extras]
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
