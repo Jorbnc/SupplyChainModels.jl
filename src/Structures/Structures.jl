@@ -1,2 +1,3 @@
-export supplychain
-include("topology.jl")
+
+include("types.jl")
+include("supplychains.jl")

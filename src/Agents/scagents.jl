@@ -1,50 +1,68 @@
-"""
-A demand-only agent. Demand distribution is implemented in an `EndCustomerLink`
-"""
-mutable struct EndCustomer{P<:InventoryPolicy} <: AbstractAgent
-    policy::P
-end
+export @Node
+export DemandNode, Store, Warehouse
 
-EndCustomer() = EndCustomer(NoPolicy())
 
 """
-Store or Retailer that has direct contact with an `EndCustomer`
-"""
-mutable struct Store{P<:InventoryPolicy} <: AbstractAgent
-    stock::Vector{Int}
-    capacity::Vector{Int}
-    policy::P
-    policy_f::Function #FIX: This looks OOP
+Helps defining nodes without too much verbosity:
 
-    function Store(stock::Vector{Int}, capacity::Vector{Int}, policy::P) where {P<:InventoryPolicy}
-        new{typeof(policy)}(stock, capacity, policy, x -> x)
-        # https://discourse.julialang.org/t/how-to-resolve-syntax-too-few-type-parameters-specified-in-new/15766
+    SC[:WH] = @Node Warehouse :B => (stock=10_000,)
+
+    SC[:Store] = @Node Store begin
+        :A => (stock=600,)
+        :B => (stock=600,)
+    end
+"""
+macro Node(type, block)
+
+    # Initialize pairs :SKU => NamedTuple(...) and last argument
+    dict_pairs = Expr[]
+    last_arg = nothing
+
+    # Allows to either begin-end blocks or single liners
+    statements = block isa Expr && block.head === :block ? block.args : (block,)
+    for s in statements
+        if s isa Expr
+            # If there's an "=>" in the expression, then...
+            if s.head === :call && s.args[1] === :(=>)
+                push!(dict_pairs, s)
+            else # Otherwise, it must be a single argument (e.g., max_capacity)
+                last_arg = s
+            end
+        end
     end
 
+    # Construction
+    dict_expr = Expr(:call, :Dict, dict_pairs...)
+    if isnothing(last_arg)
+        constructor_expr = Expr(:call, esc(type), dict_expr)
+    else
+        constructor_expr = Expr(:call, esc(type), dict_expr, last_arg)
+    end
 end
 
-Store(stock::Vector{Int}, policy::P) where {P<:InventoryPolicy} = Store(stock, [typemax(Int) for _ in stock], policy)
-Store(stock::Int, policy::P, capacity::Int=typemax(Int)) where {P<:InventoryPolicy} = Store([stock], [capacity], policy)
-function Store(;
-    stock::Vector{Int},
-    policy::P,
-    capacity::Vector{Int}=[typemax(Int) for _ in 1:length(stock)],
-) where {P<:InventoryPolicy}
-    return Store(stock, capacity, policy)
+
+"""
+A demand-only agent. Demand distribution is implemented in an `DemandLink`
+"""
+struct DemandNode <: AbstractAgent
 end
+
+
+"""
+Store or Retailer that has direct contact with a `DemandNode`
+"""
+struct Store{NT<:NamedTuple,C<:Real} <: AbstractAgent
+    SKU_data::Dict{Symbol,NT}
+    max_capacity::C
+end
+Store(SKU_data::Dict{Symbol,NT}) where {NT<:NamedTuple} = Store(SKU_data, Inf)
+
 
 """
 Warehouse
 """
-mutable struct Warehouse{P<:InventoryPolicy} <: AbstractAgent
-    stock::Vector{Int}
-    capacity::Vector{Int}
-    policy::P
-    #upstream_demand::Foo
+struct Warehouse{NT<:NamedTuple,C<:Real} <: AbstractAgent
+    SKU_data::Dict{Symbol,NT}
+    max_capacity::C
 end
-
-function Warehouse(stock::Vector{Int}, policy::P=NoPolicy()) where {P<:InventoryPolicy}
-    Warehouse(stock, [typemax(Int) for _ in stock], policy)
-end
-Warehouse(stock::Int, capacity::Int=typemax(Int), policy=NoPolicy()) = Warehouse([stock], [capacity], policy)
-Warehouse(; stock::Int, capacity::Int=typemax(Int), policy=NoPolicy()) = Warehouse([stock], [capacity], policy)
+Warehouse(SKU_data::Dict{Symbol,NT}) where {NT<:NamedTuple} = Warehouse(SKU_data, Inf)

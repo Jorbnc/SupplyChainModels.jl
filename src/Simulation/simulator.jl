@@ -1,39 +1,49 @@
-struct TimeSimulator{RNG<:AbstractRNG} <: AbstractSimulator
+export SimpleSimulator, run!
+
+"""
+...
+"""
+struct SimpleSimulator{RNG<:AbstractRNG,A<:AbstractArray} <: AbstractSimulator
     rng::RNG
-    T::Int
+    horizon::Int
+    #= INV::Array{Int,3} =#
+    INV::A
+    indices_SKU::Dict{Symbol,Int}
+    N_SKUs::Int
+    baz::Vector{Any} #TODO: Improve this
 end
 
-function TimeSimulator(; rng=Random.default_rng(), T=365)
-    return TimeSimulator(rng, T)
-end
+function SimpleSimulator(SC::MetaGraph; rng=Random.default_rng(), horizon=365)
+    # System Inventory Initialization
+    INV, indices_SKU = initialize_inventory!(SC)
 
-"""
-Time Simulation
-"""
-function simulate!(sc::MetaGraph, simulator::TimeSimulator)
-    t = 1
-
-    generate_policies!(sc)
-
-    stocks_1 = Int[]
-    stocks_2 = Int[]
-
-    while t < simulator.T
-
-        # Edge Iteration
-        for ((node_label_1, node_label_2), link) in sc.edge_data
-            activate_link!(sc[node_label_1], sc[node_label_2], link, t)
-        end
-
-        # Supplier Iteration
-        for (node_label, (node_code, node)) in sc.vertex_properties
-            activate_node!(node, t)
-        end
-
-        push!(stocks_1, sc[:Store].stock[1])
-        push!(stocks_2, sc[:Store].stock[2])
-
-        t += 1
+    baz = []
+    # Link Initialization
+    for ((labelA, labelB), link) in SC.edge_data
+        foo = initialize_link!(SC, code_for(SC, labelA), code_for(SC, labelB), link, horizon, indices_SKU)
+        push!(baz, foo...)
     end
-    return stocks_1, stocks_2
+
+    return SimpleSimulator(rng, horizon, INV, indices_SKU, length(indices_SKU), baz)
+end
+
+"""
+...
+"""
+function run!(SC::MetaGraph, sim::SimpleSimulator, vis=nothing)
+
+    if !isnothing(vis)
+        v = vis(sim)
+    end
+
+    for t in 0:sim.horizon
+        for (P, SO, L) in sim.baz
+            P(t, sim.INV, SO, L)
+        end
+
+        if !isnothing(vis)
+            v(t, sim)
+        end
+    end
+    #= println(v.obs) =#
 end

@@ -1,7 +1,4 @@
-include("nodeactivation.jl")
-include("linkactivation.jl")
-
-export TimeSimulator, simulate!
+include("initialization.jl")
 include("simulator.jl")
 
 

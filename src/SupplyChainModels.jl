@@ -1,16 +1,40 @@
 module SupplyChainModels
 
 using Reexport
-using Graphs, MetaGraphsNext, GraphMakie
+using MetaGraphsNext, MetaGraphsNext.Graphs # Evaluate whether these must be reexported
+using GraphMakie, GLMakie
 using Random
+using Accessors
 
 @reexport using Distributions
 
-include("type_definitions.jl")
+export LeadTime
+
+"""
+...
+"""
+mutable struct LeadTime{D<:UnivariateDistribution}
+    𝒟::D
+    counter::Int
+    active::Bool
+end
+
+LeadTime(𝒟::UnivariateDistribution) = LeadTime(𝒟, rand(𝒟) + 1, false)
+LeadTime(t::Int) = LeadTime(Constant(t), t + 1, false)
+
+function (L::LeadTime)()
+    L.counter -= 1
+    if L.counter == 0
+        L.counter = rand(L.𝒟) + 1
+        return true
+    end
+    return false
+end
+
 include("Structures/Structures.jl")
+include("Actions/Actions.jl")
 include("Policies/Policies.jl")
 include("Agents/Agents.jl")
-include("Actions/Actions.jl")
 include("Simulation/Simulation.jl")
 include("Visuals/Visuals.jl")
 

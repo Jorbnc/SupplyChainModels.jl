@@ -1,2 +1,2 @@
-export scplot
 include("scplotting.jl")
+include("inventoryvisuals.jl")
