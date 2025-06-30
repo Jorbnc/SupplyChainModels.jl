@@ -1,8 +1,7 @@
 module SupplyChainModels
 
 using Reexport
-using MetaGraphsNext, MetaGraphsNext.Graphs # Evaluate whether these must be reexported
-using GraphMakie, GLMakie
+using MetaGraphsNext, MetaGraphsNext.Graphs
 using Random
 using Accessors
 
@@ -36,6 +35,5 @@ include("Actions/Actions.jl")
 include("Policies/Policies.jl")
 include("Agents/Agents.jl")
 include("Simulation/Simulation.jl")
-include("Visuals/Visuals.jl")
 
 end # module
