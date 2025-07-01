@@ -18,6 +18,7 @@ function order_inventory!(INV, idxA, idxB, idxSKU, Q, SO, L)
     if stockA < Q⁺
         SO(INV, idxA, idxB, idxSKU, Q⁺ - stockA)
         # NOTE: Handle partial replenishments
+        # 5
     else
         # A decrease in A's IOH in order to represent on-transit inventory
         INV[idxSKU, idxA, 1] -= Q⁺
