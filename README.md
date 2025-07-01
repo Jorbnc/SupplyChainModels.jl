@@ -106,7 +106,70 @@ where:
 - `sim.INV[:,:,1]`, `sim.INV[:,:,2]` and `sim.INV[:,:,3]` represent the inventory on-hand, pipeline, and backlog respectively.
 - Rows represent different items and columns represent different nodes.
 
-## EOQ
+## Plotting an EOQ model
+
+```julia
+using SupplyChainModels, GLMakie, GraphMakie
+
+# SC
+SC = SupplyChain()
+
+# Nodes
+SC[:WH] = @Node Warehouse :A => (stock=5000,)
+SC[:Store] = @Node Store :A => (stock=0,)
+SC[:Customer] = DemandNode()
+
+# Links
+SC[:WH, :Store] = @Link ReplenishmentLink begin
+    :A => (R=EOQ(0.225, 8), SO=Backorder(), L=LeadTime(5))
+end
+SC[:Store, :Customer] = @Link DemandLink begin
+    :A => (D=Poisson(20), T=2, SO=Backorder(), L=LeadTime(0))
+end
+
+# Simulation
+sim = SimpleSimulator(SC, horizon=365)
+function simrun!(SC::MetaGraph, sim::SimpleSimulator)
+
+    fig = Figure()
+    axs = [Axis(fig[i, 1]) for i in 1:3]
+
+    # Observables
+    WH_IOH = Observable(Point2f[(0, 0)])
+    Store_IOH = Observable(Point2f[(0, 0)])
+    Store_Pipeline = Observable(Point2f[(0, 0)])
+    Customer_Backorders = Observable(Point2f[(0, 0)])
+
+    # Lines
+    lines!(axs[1], WH_IOH, label="WH IOH")
+    lines!(axs[2], Store_IOH, label="Store IOH")
+    lines!(axs[2], Store_Pipeline, label="Store Pipe")
+    lines!(axs[3], Customer_Backorders, label="Cust Backorders")
+
+    # Figure config
+    limits!(axs[1], 0, sim.horizon, 0, 5000)
+    limits!(axs[2], 0, sim.horizon, 0, 1000)
+    limits!(axs[3], 0, sim.horizon, 0, 100)
+    axislegend(axs[1])
+    axislegend(axs[2], nbanks=2)
+    axislegend(axs[3])
+    display(fig)
+
+    for t in 0:sim.horizon
+        for (P, SO, L) in sim.policies
+            P(t, sim.INV, SO, L)
+        end
+
+        WH_IOH[] = push!(WH_IOH[], Point2f(t, sim.INV[1, 1, 1]))
+        Store_IOH[] = push!(Store_IOH[], Point2f(t, sim.INV[1, 2, 1]))
+        Store_Pipeline[] = push!(Store_Pipeline[], Point2f(t, sim.INV[1, 2, 2]))
+        Customer_Backorders[] = push!(Customer_Backorders[], Point2f(t, sim.INV[1, 3, 3]))
+
+        sleep(2 * 1 / sim.horizon)
+    end
+end
+simrun!(SC, sim)
+```
 
 https://github.com/user-attachments/assets/346adfa1-a5c5-4c4b-a573-f0f87887a7d9
 
