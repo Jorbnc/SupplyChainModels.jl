@@ -108,7 +108,7 @@ where:
 
 ## EOQ
 
-<video src='docs/src/assets/eoq.mp4' width=360/> 
+https://github.com/user-attachments/assets/346adfa1-a5c5-4c4b-a573-f0f87887a7d9
 
 ## TODOs
 - [ ] EOQ variations
