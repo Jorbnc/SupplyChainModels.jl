@@ -1,4 +1,4 @@
-# SupplyChainModels
+# SupplyChainModels.jl
 
 A package for graph-based supply chain modelling and simulation, with a focus on multi-echelon, multi-product systems.
 
