@@ -108,6 +108,8 @@ where:
 
 ## Plotting an EOQ model
 
+https://github.com/user-attachments/assets/346adfa1-a5c5-4c4b-a573-f0f87887a7d9
+
 ```julia
 using SupplyChainModels, GLMakie, GraphMakie
 
@@ -171,9 +173,8 @@ end
 simrun!(SC, sim)
 ```
 
-https://github.com/user-attachments/assets/346adfa1-a5c5-4c4b-a573-f0f87887a7d9
-
 ## TODOs
+- [ ] Simplify plotting
 - [ ] EOQ variations
 - [ ] Classical continuous and periodic review models
 - [ ] Interface for user-defined policies and demand patterns
