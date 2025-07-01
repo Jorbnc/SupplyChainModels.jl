@@ -3,41 +3,38 @@ export SimpleSimulator, run!
 """
 ...
 """
-struct SimpleSimulator{RNG<:AbstractRNG,A<:AbstractArray} <: AbstractSimulator
-    rng::RNG
+struct SimpleSimulator{A<:AbstractArray} <: AbstractSimulator
     horizon::Int
-    #= INV::Array{Int,3} =#
     INV::A
     indices_SKU::Dict{Symbol,Int}
     N_SKUs::Int
-    baz::Vector{Any} #TODO: Improve this
+    policies::Vector{Any} #TODO: Rename
 end
 
-function SimpleSimulator(SC::MetaGraph; rng=Random.default_rng(), horizon=365)
+function SimpleSimulator(SC::MetaGraph; horizon=365)
     # System Inventory Initialization
     INV, indices_SKU = initialize_inventory!(SC)
 
-    baz = []
+    policies = []
     # Link Initialization
     for ((labelA, labelB), link) in SC.edge_data
-        foo = initialize_link!(SC, code_for(SC, labelA), code_for(SC, labelB), link, horizon, indices_SKU)
-        push!(baz, foo...)
+        ps = initialize_link!(SC, code_for(SC, labelA), code_for(SC, labelB), link, horizon, indices_SKU)
+        push!(policies, ps...)
     end
 
-    return SimpleSimulator(rng, horizon, INV, indices_SKU, length(indices_SKU), baz)
+    return SimpleSimulator(horizon, INV, indices_SKU, length(indices_SKU), policies)
 end
 
 """
 ...
 """
 function run!(SC::MetaGraph, sim::SimpleSimulator, vis=nothing)
-
     if !isnothing(vis)
         v = vis(sim)
     end
 
     for t in 0:sim.horizon
-        for (P, SO, L) in sim.baz
+        for (P, SO, L) in sim.policies
             P(t, sim.INV, SO, L)
         end
 
@@ -45,5 +42,4 @@ function run!(SC::MetaGraph, sim::SimpleSimulator, vis=nothing)
             v(t, sim)
         end
     end
-    #= println(v.obs) =#
 end

@@ -1,10 +1,10 @@
 module SupplyChainModels
 
 using Reexport
-using MetaGraphsNext, MetaGraphsNext.Graphs
 using Random
 using Accessors
 
+@reexport using MetaGraphsNext, MetaGraphsNext.Graphs
 @reexport using Distributions
 
 export LeadTime
@@ -35,5 +35,6 @@ include("Actions/Actions.jl")
 include("Policies/Policies.jl")
 include("Agents/Agents.jl")
 include("Simulation/Simulation.jl")
+include("Visuals/Visuals.jl")
 
 end # module
